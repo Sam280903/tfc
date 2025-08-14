@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../../constantes/cores.dart';
+import '../../../../servicos/autenticacao_servico.dart';
 
 class LoginTela extends StatefulWidget {
   const LoginTela({super.key});
@@ -13,20 +15,26 @@ class _LoginTelaState extends State<LoginTela> {
   final TextEditingController _senhaController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  final _authServico = AutenticacaoServico();
+
   bool _ocultarSenha = true;
   String? _mensagemErro;
 
-  void _fazerLogin() {
+  Future<void> _fazerLogin() async {
     final email = _emailController.text.trim();
     final senha = _senhaController.text;
 
     if (_formKey.currentState!.validate()) {
       setState(() => _mensagemErro = null);
 
-      if (email == "admin@gerenciar.com" && senha == "12a3456") {
-        Navigator.pushReplacementNamed(context, "/home");
-      } else {
-        setState(() => _mensagemErro = "E-mail ou senha inválidos.");
+      try {
+        final usuario = await _authServico.login(email, senha);
+        if (usuario != null) {
+          Navigator.pushReplacementNamed(context, "/home");
+        }
+      } catch (e) {
+        setState(
+            () => _mensagemErro = e.toString().replaceFirst("Exception: ", ""));
       }
     }
   }
@@ -52,7 +60,7 @@ class _LoginTelaState extends State<LoginTela> {
                 children: [
                   Image.asset(
                     'assets/imagens/logo_gerenciar.png',
-                    height: 160, // ⬆️ logo aumentada
+                    height: 160,
                   ),
                   const SizedBox(height: 32),
                   _campoTexto(
@@ -127,7 +135,7 @@ class _LoginTelaState extends State<LoginTela> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white, // fundo branco
+        color: Colors.white,
         borderRadius: BorderRadius.circular(10),
         boxShadow: const [
           BoxShadow(
