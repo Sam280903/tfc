@@ -1,7 +1,7 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 
-import '../../dominio/interfaces/tecnico_repositorio_interface.dart';
-import '../../dominio/entidades/tecnico.dart';
+import 'package:gerenciar/dominio/interfaces/tecnico_repositorio_interface.dart';
+import 'package:gerenciar/dominio/entidades/tecnico.dart';
 import 'tecnico_repositorio_impl.dart';
 import 'tecnico_repositorio_impl_sqlite.dart';
 

@@ -1,7 +1,7 @@
-import '../../dominio/interfaces/tecnico_repositorio_interface.dart';
-import '../../dominio/entidades/tecnico.dart';
-import '../modelos/tecnico_model.dart';
-import '../fontes_dados/sqlite/tecnico_sqlite.dart';
+import 'package:gerenciar/dominio/interfaces/tecnico_repositorio_interface.dart';
+import 'package:gerenciar/dominio/entidades/tecnico.dart';
+import '../../modelos/tecnico_model.dart';
+import '../../fontes_dados/sqlite/tecnico_sqlite.dart';
 
 class TecnicoRepositorioImplSQLite implements TecnicoRepositorioInterface {
   final TecnicoSQLite _fonteSQLite = TecnicoSQLite();

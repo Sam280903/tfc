@@ -1,48 +1,48 @@
-import 'package:gerenciar/dados/fontes_dados/sqlite/sqlite_conexao.dart';
 import 'package:sqflite/sqflite.dart';
-import '../../modelos/tecnico_model.dart';
+import 'package:gerenciar/dados/fontes_dados/sqlite/sqlite_conexao.dart';
+import '../../modelos/ordem_servico_model.dart';
 
-class TecnicoSQLite {
+class OrdemServicoSQLite {
   Future<Database> get _db async => await SQLiteConexao.db;
 
-  Future<void> adicionarTecnico(TecnicoModel tecnico) async {
+  Future<void> adicionar(OrdemServicoModel os) async {
     final db = await _db;
     await db.insert(
-      'tecnicos',
-      tecnico.toMap(),
+      'ordens_servico',
+      os.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
 
-  Future<void> atualizarTecnico(TecnicoModel tecnico) async {
+  Future<void> atualizar(OrdemServicoModel os) async {
     final db = await _db;
     await db.update(
-      'tecnicos',
-      tecnico.toMap(),
+      'ordens_servico',
+      os.toMap(),
       where: 'id = ?',
-      whereArgs: [tecnico.id],
+      whereArgs: [os.id],
     );
   }
 
-  Future<void> inativarTecnico(String id) async {
+  Future<void> inativar(String id) async {
     final db = await _db;
     await db.update(
-      'tecnicos',
+      'ordens_servico',
       {'ativo': 0},
       where: 'id = ?',
       whereArgs: [id],
     );
   }
 
-  Future<TecnicoModel?> buscarPorId(String id) async {
+  Future<OrdemServicoModel?> buscarPorId(String id) async {
     final db = await _db;
     final resultado = await db.query(
-      'tecnicos',
+      'ordens_servico',
       where: 'id = ?',
       whereArgs: [id],
     );
     if (resultado.isNotEmpty) {
-      return TecnicoModel.fromMap(
+      return OrdemServicoModel.fromMap(
         resultado.first,
         resultado.first['id'] as String,
       );
@@ -50,15 +50,15 @@ class TecnicoSQLite {
     return null;
   }
 
-  Future<List<TecnicoModel>> listarTodos() async {
+  Future<List<OrdemServicoModel>> listarTodos() async {
     final db = await _db;
     final resultado = await db.query(
-      'tecnicos',
+      'ordens_servico',
       where: 'ativo = ?',
       whereArgs: [1],
     );
     return resultado.map((linha) {
-      return TecnicoModel.fromMap(
+      return OrdemServicoModel.fromMap(
         linha,
         linha['id'] as String,
       );

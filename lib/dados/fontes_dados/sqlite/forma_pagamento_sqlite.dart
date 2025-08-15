@@ -1,48 +1,48 @@
-import 'package:gerenciar/dados/fontes_dados/sqlite/sqlite_conexao.dart';
 import 'package:sqflite/sqflite.dart';
-import '../../modelos/tecnico_model.dart';
+import 'package:gerenciar/dados/fontes_dados/sqlite/sqlite_conexao.dart';
+import '../../modelos/forma_pagamento_model.dart';
 
-class TecnicoSQLite {
+class FormaPagamentoSQLite {
   Future<Database> get _db async => await SQLiteConexao.db;
 
-  Future<void> adicionarTecnico(TecnicoModel tecnico) async {
+  Future<void> adicionar(FormaPagamentoModel forma) async {
     final db = await _db;
     await db.insert(
-      'tecnicos',
-      tecnico.toMap(),
+      'formas_pagamento',
+      forma.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
 
-  Future<void> atualizarTecnico(TecnicoModel tecnico) async {
+  Future<void> atualizar(FormaPagamentoModel forma) async {
     final db = await _db;
     await db.update(
-      'tecnicos',
-      tecnico.toMap(),
+      'formas_pagamento',
+      forma.toMap(),
       where: 'id = ?',
-      whereArgs: [tecnico.id],
+      whereArgs: [forma.id],
     );
   }
 
-  Future<void> inativarTecnico(String id) async {
+  Future<void> inativar(String id) async {
     final db = await _db;
     await db.update(
-      'tecnicos',
+      'formas_pagamento',
       {'ativo': 0},
       where: 'id = ?',
       whereArgs: [id],
     );
   }
 
-  Future<TecnicoModel?> buscarPorId(String id) async {
+  Future<FormaPagamentoModel?> buscarPorId(String id) async {
     final db = await _db;
     final resultado = await db.query(
-      'tecnicos',
+      'formas_pagamento',
       where: 'id = ?',
       whereArgs: [id],
     );
     if (resultado.isNotEmpty) {
-      return TecnicoModel.fromMap(
+      return FormaPagamentoModel.fromMap(
         resultado.first,
         resultado.first['id'] as String,
       );
@@ -50,17 +50,17 @@ class TecnicoSQLite {
     return null;
   }
 
-  Future<List<TecnicoModel>> listarTodos() async {
+  Future<List<FormaPagamentoModel>> listarTodos() async {
     final db = await _db;
     final resultado = await db.query(
-      'tecnicos',
+      'formas_pagamento',
       where: 'ativo = ?',
       whereArgs: [1],
     );
-    return resultado.map((linha) {
-      return TecnicoModel.fromMap(
-        linha,
-        linha['id'] as String,
+    return resultado.map((row) {
+      return FormaPagamentoModel.fromMap(
+        row,
+        row['id'] as String,
       );
     }).toList();
   }
