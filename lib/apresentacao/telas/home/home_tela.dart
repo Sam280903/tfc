@@ -1,14 +1,52 @@
+// lib/apresentacao/telas/home/home_tela.dart
+
 import 'package:flutter/material.dart';
+import 'package:gerenciar/servicos/autenticacao_servico.dart';
 import '../../../constantes/cores.dart';
 import '../../../app/rotas.dart';
 
-class HomeTela extends StatelessWidget {
+class HomeTela extends StatefulWidget {
   const HomeTela({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final String nomeUsuario = "João – Gestor";
+  State<HomeTela> createState() => _HomeTelaState();
+}
 
+class _HomeTelaState extends State<HomeTela> {
+  // Variável para armazenar a saudação personalizada
+  String _saudacaoUsuario = "Olá...";
+
+  @override
+  void initState() {
+    super.initState();
+    _carregarDadosUsuario();
+  }
+
+  // Método para buscar os dados do usuário e atualizar a tela
+  void _carregarDadosUsuario() async {
+    final dados = await AutenticacaoServico().buscarDadosUsuarioLogado();
+    if (dados != null && mounted) {
+      setState(() {
+        // Formata a saudação com o nome e o perfil vindos do Firestore
+        final nome = dados['nome'] ?? 'Usuário';
+        final perfil = dados['perfil'] ?? '';
+        _saudacaoUsuario = "Olá, $nome - $perfil";
+      });
+    } else {
+      _saudacaoUsuario = "Olá, Usuário";
+    }
+  }
+
+  // Método para fazer logout
+  void _fazerLogout() async {
+    await AutenticacaoServico().logout();
+    if (mounted) {
+      Navigator.pushReplacementNamed(context, Rotas.login);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Cores.azulFundo,
       appBar: AppBar(
@@ -23,9 +61,7 @@ class HomeTela extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.power_settings_new, color: Colors.white),
-            onPressed: () {
-              Navigator.pushReplacementNamed(context, Rotas.login);
-            },
+            onPressed: _fazerLogout, // Chama o método de logout
           )
         ],
       ),
@@ -43,15 +79,15 @@ class HomeTela extends StatelessWidget {
               ),
             ),
           ),
-
           // Conteúdo da tela
           Padding(
             padding: const EdgeInsets.all(24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Exibe a saudação dinâmica
                 Text(
-                  'Olá, $nomeUsuario',
+                  _saudacaoUsuario,
                   style: const TextStyle(fontSize: 22, color: Colors.white),
                 ),
                 const SizedBox(height: 24),

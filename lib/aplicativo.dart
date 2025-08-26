@@ -1,4 +1,7 @@
+// lib/aplicativo.dart
+
 import 'package:flutter/material.dart';
+import 'package:gerenciar/apresentacao/telas/verificador_inicial_tela.dart';
 import 'apresentacao/telas/login/login_tela.dart';
 import 'apresentacao/telas/home/home_tela.dart';
 import 'apresentacao/telas/ordens_servico/ordens_servico_tela.dart';
@@ -9,6 +12,7 @@ import 'apresentacao/telas/relatorios/relatorios_tela.dart';
 import 'apresentacao/telas/tutoriais/tutoriais_tela.dart';
 import 'apresentacao/telas/formas_pagamento/formas_pagamento_tela.dart';
 import 'apresentacao/telas/comuntem/comuntem_tela.dart';
+import 'apresentacao/telas/cadastro_gestor/cadastro_gestor_tela.dart';
 import 'app/rotas.dart';
 import 'app/tema.dart';
 
@@ -21,9 +25,11 @@ class GerenciarApp extends StatelessWidget {
       title: 'GerenciAR',
       debugShowCheckedModeBanner: false,
       theme: temaPrincipal,
-      initialRoute: Rotas.login,
+      initialRoute: Rotas.verificador, // Rota inicial agora é o verificador
       routes: {
+        Rotas.verificador: (context) => const VerificadorInicialTela(),
         Rotas.login: (context) => const LoginTela(),
+        Rotas.cadastroGestor: (context) => const CadastroGestorTela(),
         Rotas.home: (context) => const HomeTela(),
         Rotas.ordensServico: (_) => const OrdensServicoTela(),
         Rotas.tecnicos: (_) => const TecnicosTela(),

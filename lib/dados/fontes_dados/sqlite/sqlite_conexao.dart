@@ -67,6 +67,17 @@ class SQLiteConexao {
       );
     ''');
 
+    await db.execute('''
+      CREATE TABLE agendamentos (
+        id TEXT PRIMARY KEY,
+        idTecnico TEXT,
+        idCliente TEXT,
+        dataHora TEXT,
+        observacao TEXT,
+        ativo INTEGER
+      );
+    ''');
+
     // Adicione outras tabelas conforme o projeto cresce.
   }
 
