@@ -2,10 +2,12 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class AutenticacaoServico {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseMessaging _fcm = FirebaseMessaging.instance;
 
   Future<User?> login(String email, String senha) async {
     try {
@@ -86,6 +88,33 @@ class AutenticacaoServico {
         throw Exception('A senha fornecida é muito fraca.');
       }
       throw Exception('Erro ao cadastrar: ${e.message}');
+    }
+  }
+
+  Future<void> salvarTokenDoDispositivo() async {
+    final usuario = _auth.currentUser;
+    if (usuario == null) return;
+
+    // Pede permissão para enviar notificações (importante para iOS)
+    await _fcm.requestPermission();
+
+    // Obtém o token FCM do dispositivo
+    final token = await _fcm.getToken();
+
+    if (token != null) {
+      final tokensRef = _firestore
+          .collection('usuarios')
+          .doc(usuario.uid)
+          .collection('tokens')
+          .doc(token);
+
+      // Salva o token como um documento numa subcoleção do utilizador.
+      // Isto permite que um utilizador tenha múltiplos dispositivos.
+      await tokensRef.set({
+        'token': token,
+        'criadoEm': FieldValue.serverTimestamp(),
+      });
+      print('Token salvo com sucesso: $token');
     }
   }
 
