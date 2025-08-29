@@ -1,5 +1,6 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
+// lib/dados/repositorios/agendamento/agendamento_repositorio_adaptativo.dart
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:gerenciar/dominio/entidades/agendamento.dart';
 import 'package:gerenciar/dominio/interfaces/agendamento_repositorio_interface.dart';
 import 'agendamento_repositorio_impl.dart';
@@ -15,8 +16,19 @@ class AgendamentoRepositorioAdaptativo
     return status != ConnectivityResult.none;
   }
 
+  // O método _escolherRepositorio agora é privado, pois só é usado aqui dentro.
   Future<AgendamentoRepositorioInterface> _escolherRepositorio() async {
     return await _temConexao() ? _firebase : _sqlite;
+  }
+
+  // MÉTODO NOVO IMPLEMENTADO
+  @override
+  Future<bool> verificarDisponibilidade(
+      String idTecnico, DateTime dataHora) async {
+    // A lógica é a mesma: escolhe o repositório correto (online/offline)
+    // e repassa a chamada para ele.
+    final repo = await _escolherRepositorio();
+    return repo.verificarDisponibilidade(idTecnico, dataHora);
   }
 
   @override

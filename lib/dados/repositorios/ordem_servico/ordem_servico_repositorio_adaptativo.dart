@@ -19,6 +19,15 @@ class OrdemServicoRepositorioAdaptativo
     return await _temConexao() ? _repositorioOnline : _repositorioOffline;
   }
 
+  // MÉTODO QUE FALTAVA
+  @override
+  Future<void> reabrir(
+      {required String id, required String justificativa}) async {
+    final repo = await _escolherRepositorio();
+    await repo.reabrir(id: id, justificativa: justificativa);
+  }
+  // FIM DO MÉTODO QUE FALTAVA
+
   @override
   Future<void> adicionar(OrdemServico ordem) async {
     final repo = await _escolherRepositorio();

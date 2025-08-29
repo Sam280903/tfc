@@ -1,9 +1,24 @@
+// lib/dados/fontes_dados/sqlite/agendamento_sqlite.dart
+
 import 'package:sqflite/sqflite.dart';
 import 'package:gerenciar/dados/fontes_dados/sqlite/sqlite_conexao.dart';
 import '../../modelos/agendamento_model.dart';
 
 class AgendamentoSQLite {
   Future<Database> get _db async => await SQLiteConexao.db;
+
+  // Novo método para fazer a consulta no SQLite
+  Future<bool> verificarConflito(String idTecnico, DateTime dataHora) async {
+    final db = await _db;
+    final resultado = await db.query(
+      'agendamentos',
+      where: 'idTecnico = ? AND dataHora = ? AND ativo = ?',
+      whereArgs: [idTecnico, dataHora.toIso8601String(), 1],
+      limit: 1,
+    );
+    // Se a consulta retornar alguma linha, o horário está ocupado.
+    return resultado.isNotEmpty;
+  }
 
   Future<void> adicionar(AgendamentoModel agendamento) async {
     final db = await _db;

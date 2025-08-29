@@ -6,6 +6,13 @@ import '../../modelos/ordem_servico_model.dart';
 class OrdemServicoRepositorioImpl implements OrdemServicoRepositorioInterface {
   final OrdemServicoFirebase _fonteFirebase = OrdemServicoFirebase();
 
+  // MÉTODO QUE FALTAVA
+  @override
+  Future<void> reabrir({required String id, required String justificativa}) {
+    return _fonteFirebase.reabrir(id: id, justificativa: justificativa);
+  }
+  // FIM DO MÉTODO QUE FALTAVA
+
   @override
   Future<void> adicionar(OrdemServico ordem) async {
     final model = OrdemServicoModel.fromEntidade(ordem);

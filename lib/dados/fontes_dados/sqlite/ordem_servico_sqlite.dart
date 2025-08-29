@@ -1,3 +1,5 @@
+// lib/dados/fontes_dados/sqlite/ordem_servico_sqlite.dart
+
 import 'package:sqflite/sqflite.dart';
 import 'package:gerenciar/dados/fontes_dados/sqlite/sqlite_conexao.dart';
 import '../../modelos/ordem_servico_model.dart';
@@ -5,11 +7,27 @@ import '../../modelos/ordem_servico_model.dart';
 class OrdemServicoSQLite {
   Future<Database> get _db async => await SQLiteConexao.db;
 
+  // Novo método para reabrir no SQLite
+  Future<void> reabrir(
+      {required String id, required String justificativa}) async {
+    final db = await _db;
+    await db.update(
+      'ordens_servico',
+      {
+        'status': 'Reaberto',
+        // No SQLite, podemos adicionar a justificativa na descrição para não alterar o schema
+        'descricao': 'OS REABERTA: $justificativa',
+      },
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
   Future<void> adicionar(OrdemServicoModel os) async {
     final db = await _db;
     await db.insert(
       'ordens_servico',
-      os.toMap(),
+      os.toMapForDb(), // Usaremos um método específico para o DB
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
@@ -18,7 +36,7 @@ class OrdemServicoSQLite {
     final db = await _db;
     await db.update(
       'ordens_servico',
-      os.toMap(),
+      os.toMapForDb(),
       where: 'id = ?',
       whereArgs: [os.id],
     );
@@ -28,7 +46,7 @@ class OrdemServicoSQLite {
     final db = await _db;
     await db.update(
       'ordens_servico',
-      {'ativo': 0},
+      {'ativo': 0}, // No SQLite, booleano é 0 ou 1
       where: 'id = ?',
       whereArgs: [id],
     );
@@ -42,10 +60,7 @@ class OrdemServicoSQLite {
       whereArgs: [id],
     );
     if (resultado.isNotEmpty) {
-      return OrdemServicoModel.fromMap(
-        resultado.first,
-        resultado.first['id'] as String,
-      );
+      return OrdemServicoModel.fromDbMap(resultado.first);
     }
     return null;
   }
@@ -57,11 +72,8 @@ class OrdemServicoSQLite {
       where: 'ativo = ?',
       whereArgs: [1],
     );
-    return resultado.map((linha) {
-      return OrdemServicoModel.fromMap(
-        linha,
-        linha['id'] as String,
-      );
-    }).toList();
+    return resultado
+        .map((linha) => OrdemServicoModel.fromDbMap(linha))
+        .toList();
   }
 }
