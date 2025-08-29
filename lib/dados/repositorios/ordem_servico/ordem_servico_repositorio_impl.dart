@@ -1,4 +1,5 @@
 import 'package:gerenciar/dominio/entidades/ordem_servico.dart';
+import 'package:gerenciar/servicos/relatorio_servico.dart';
 import 'package:gerenciar/dominio/interfaces/ordem_servico_repositorio_interface.dart';
 import '../../fontes_dados/firebase/ordem_servico_firebase.dart';
 import '../../modelos/ordem_servico_model.dart';
@@ -6,12 +7,10 @@ import '../../modelos/ordem_servico_model.dart';
 class OrdemServicoRepositorioImpl implements OrdemServicoRepositorioInterface {
   final OrdemServicoFirebase _fonteFirebase = OrdemServicoFirebase();
 
-  // MÉTODO QUE FALTAVA
   @override
   Future<void> reabrir({required String id, required String justificativa}) {
     return _fonteFirebase.reabrir(id: id, justificativa: justificativa);
   }
-  // FIM DO MÉTODO QUE FALTAVA
 
   @override
   Future<void> adicionar(OrdemServico ordem) async {
@@ -39,6 +38,12 @@ class OrdemServicoRepositorioImpl implements OrdemServicoRepositorioInterface {
   @override
   Future<List<OrdemServico>> listarTodos() async {
     final modelos = await _fonteFirebase.listarTodos();
+    return modelos.map((m) => m.toEntidade()).toList();
+  }
+
+  @override
+  Future<List<OrdemServico>> listarComFiltros(FiltrosRelatorio filtros) async {
+    final modelos = await _fonteFirebase.listarComFiltros(filtros);
     return modelos.map((m) => m.toEntidade()).toList();
   }
 }

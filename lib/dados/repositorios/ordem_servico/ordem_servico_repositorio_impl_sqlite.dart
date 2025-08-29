@@ -1,4 +1,5 @@
 import 'package:gerenciar/dominio/entidades/ordem_servico.dart';
+import 'package:gerenciar/servicos/relatorio_servico.dart';
 import 'package:gerenciar/dominio/interfaces/ordem_servico_repositorio_interface.dart';
 import '../../fontes_dados/sqlite/ordem_servico_sqlite.dart';
 import '../../modelos/ordem_servico_model.dart';
@@ -7,12 +8,10 @@ class OrdemServicoRepositorioImplSQLite
     implements OrdemServicoRepositorioInterface {
   final OrdemServicoSQLite _fonteSQLite = OrdemServicoSQLite();
 
-  // MÉTODO QUE FALTAVA
   @override
   Future<void> reabrir({required String id, required String justificativa}) {
     return _fonteSQLite.reabrir(id: id, justificativa: justificativa);
   }
-  // FIM DO MÉTODO QUE FALTAVA
 
   @override
   Future<void> adicionar(OrdemServico ordem) async {
@@ -41,5 +40,12 @@ class OrdemServicoRepositorioImplSQLite
   Future<List<OrdemServico>> listarTodos() async {
     final modelos = await _fonteSQLite.listarTodos();
     return modelos.map((m) => m.toEntidade()).toList();
+  }
+
+  @override
+  Future<List<OrdemServico>> listarComFiltros(FiltrosRelatorio filtros) async {
+    // Implementação simplificada para offline: retorna todos e a tela filtra.
+    print("Modo offline: retornando todas as OS para filtragem na UI.");
+    return listarTodos();
   }
 }

@@ -1,5 +1,5 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
-
+import 'package:gerenciar/servicos/relatorio_servico.dart';
 import 'package:gerenciar/dominio/entidades/ordem_servico.dart';
 import 'package:gerenciar/dominio/interfaces/ordem_servico_repositorio_interface.dart';
 import 'ordem_servico_repositorio_impl.dart';
@@ -56,5 +56,11 @@ class OrdemServicoRepositorioAdaptativo
   Future<List<OrdemServico>> listarTodos() async {
     final repo = await _escolherRepositorio();
     return await repo.listarTodos();
+  }
+
+  @override
+  Future<List<OrdemServico>> listarComFiltros(FiltrosRelatorio filtros) async {
+    final repo = await _escolherRepositorio();
+    return repo.listarComFiltros(filtros);
   }
 }
