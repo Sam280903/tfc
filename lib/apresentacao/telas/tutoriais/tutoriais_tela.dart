@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class TutoriaisTela extends StatelessWidget {
-  const TutoriaisTela({Key? key}) : super(key: key);
+  const TutoriaisTela({super.key});
 
   @override
   Widget build(BuildContext context) {

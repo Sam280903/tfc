@@ -9,6 +9,19 @@ class AutenticacaoServico {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseMessaging _fcm = FirebaseMessaging.instance;
 
+  // NOVO MÉTODO ADICIONADO
+  Future<void> enviarEmailRedefinicaoSenha(String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        throw Exception('Nenhum usuário encontrado para este e-mail.');
+      } else {
+        throw Exception('Ocorreu um erro. Tente novamente.');
+      }
+    }
+  }
+
   Future<User?> login(String email, String senha) async {
     try {
       final credenciais = await _auth.signInWithEmailAndPassword(
@@ -50,6 +63,7 @@ class AutenticacaoServico {
       }
       return false;
     } catch (e) {
+      // ignore: avoid_print
       print("Erro ao verificar primeiro gestor: $e");
       return false;
     }
@@ -95,10 +109,7 @@ class AutenticacaoServico {
     final usuario = _auth.currentUser;
     if (usuario == null) return;
 
-    // Pede permissão para enviar notificações (importante para iOS)
     await _fcm.requestPermission();
-
-    // Obtém o token FCM do dispositivo
     final token = await _fcm.getToken();
 
     if (token != null) {
@@ -108,25 +119,22 @@ class AutenticacaoServico {
           .collection('tokens')
           .doc(token);
 
-      // Salva o token como um documento numa subcoleção do utilizador.
-      // Isto permite que um utilizador tenha múltiplos dispositivos.
       await tokensRef.set({
         'token': token,
         'criadoEm': FieldValue.serverTimestamp(),
       });
+      // ignore: avoid_print
       print('Token salvo com sucesso: $token');
     }
   }
 
-  // MÉTODO ADICIONADO: Busca os dados do utilizador logado no Firestore
   Future<Map<String, dynamic>?> buscarDadosUsuarioLogado() async {
-    final usuario = _auth.currentUser; // Pega o utilizador atualmente logado
+    final usuario = _auth.currentUser;
     if (usuario != null) {
-      // Usa o UID para buscar o documento correspondente no Firestore
       final docSnapshot =
           await _firestore.collection('usuarios').doc(usuario.uid).get();
       if (docSnapshot.exists) {
-        return docSnapshot.data(); // Retorna os dados: nome, email, perfil...
+        return docSnapshot.data();
       }
     }
     return null;

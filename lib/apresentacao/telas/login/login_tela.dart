@@ -1,7 +1,8 @@
+// lib/apresentacao/telas/login/login_tela.dart
+
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import '../../../constantes/cores.dart';
-import '../../../../servicos/autenticacao_servico.dart';
+import 'package:gerenciar/app/rotas.dart';
+import '../../../servicos/autenticacao_servico.dart';
 
 class LoginTela extends StatefulWidget {
   const LoginTela({super.key});
@@ -10,152 +11,143 @@ class LoginTela extends StatefulWidget {
   State<LoginTela> createState() => _LoginTelaState();
 }
 
-class _LoginTelaState extends State<LoginTela> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _senhaController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
+class _LoginTelaState extends State<LoginTela>
+    with SingleTickerProviderStateMixin {
+  final _emailController = TextEditingController();
+  final _senhaController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   final _authServico = AutenticacaoServico();
 
   bool _ocultarSenha = true;
+  bool _carregando = false;
   String? _mensagemErro;
 
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _fadeAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _emailController.dispose();
+    _senhaController.dispose();
+    super.dispose();
+  }
+
   Future<void> _fazerLogin() async {
-    final email = _emailController.text.trim();
-    final senha = _senhaController.text;
+    if (!(_formKey.currentState?.validate() ?? false)) return;
 
-    if (_formKey.currentState!.validate()) {
-      setState(() => _mensagemErro = null);
+    setState(() {
+      _carregando = true;
+      _mensagemErro = null;
+    });
 
-      try {
-        final usuario = await _authServico.login(email, senha);
-        if (usuario != null) {
-          Navigator.pushReplacementNamed(context, "/home");
-        }
-      } catch (e) {
+    try {
+      final usuario = await _authServico.login(
+        _emailController.text.trim(),
+        _senhaController.text,
+      );
+      if (mounted && usuario != null) {
+        Navigator.pushReplacementNamed(context, Rotas.home);
+      }
+    } catch (e) {
+      if (mounted) {
         setState(
             () => _mensagemErro = e.toString().replaceFirst("Exception: ", ""));
       }
+    } finally {
+      if (mounted) {
+        setState(() => _carregando = false);
+      }
     }
-  }
-
-  void _esqueciSenha() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Funcionalidade em desenvolvimento.")),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Cores.azulFundo,
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
+      body: SafeArea(
+        child: Center(
           child: SingleChildScrollView(
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    'assets/imagens/logo_gerenciar.png',
-                    height: 160,
-                  ),
-                  const SizedBox(height: 32),
-                  _campoTexto(
-                    controller: _emailController,
-                    label: "E-mail",
-                    icon: Icons.email,
-                    validator: (value) => value == null || value.isEmpty
-                        ? 'Informe o e-mail'
-                        : null,
-                  ),
-                  const SizedBox(height: 16),
-                  _campoTexto(
-                    controller: _senhaController,
-                    label: "Senha",
-                    icon: Icons.lock,
-                    obscure: _ocultarSenha,
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _ocultarSenha ? Icons.visibility_off : Icons.visibility,
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: FadeTransition(
+              opacity: _fadeAnimation,
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // --- ALTERAÇÃO AQUI ---
+                    Image.asset('assets/imagens/logo_gerenciar.png',
+                        height: 120),
+                    const SizedBox(height: 48),
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: const InputDecoration(
+                        labelText: 'E-mail',
+                        prefixIcon: Icon(Icons.email_outlined),
                       ),
-                      onPressed: () {
-                        setState(() => _ocultarSenha = !_ocultarSenha);
-                      },
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (v) => v!.isEmpty ? 'Informe o e-mail' : null,
                     ),
-                    validator: (value) => value == null || value.isEmpty
-                        ? 'Informe a senha'
-                        : null,
-                  ),
-                  const SizedBox(height: 8),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: _esqueciSenha,
-                      child: const Text(
-                        "Esqueci a senha",
-                        style: TextStyle(color: Colors.white),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _senhaController,
+                      obscureText: _ocultarSenha,
+                      decoration: InputDecoration(
+                        labelText: 'Senha',
+                        prefixIcon: const Icon(Icons.lock_outline),
+                        suffixIcon: IconButton(
+                          icon: Icon(_ocultarSenha
+                              ? Icons.visibility_off_outlined
+                              : Icons.visibility_outlined),
+                          onPressed: () =>
+                              setState(() => _ocultarSenha = !_ocultarSenha),
+                        ),
                       ),
+                      validator: (v) => v!.isEmpty ? 'Informe a senha' : null,
                     ),
-                  ),
-                  if (_mensagemErro != null)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Text(
-                        _mensagemErro!,
-                        style: const TextStyle(color: Colors.redAccent),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: () =>
+                            Navigator.pushNamed(context, Rotas.redefinirSenha),
+                        child: const Text('Esqueci a senha'),
                       ),
                     ),
-                  const SizedBox(height: 8),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _fazerLogin,
-                      child: const Text("Entrar"),
-                    ),
-                  ),
-                ],
+                    const SizedBox(height: 16),
+                    if (_mensagemErro != null)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: Text(
+                          _mensagemErro!,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                              color: Colors.redAccent, fontSize: 14),
+                        ),
+                      ),
+                    if (_carregando)
+                      const Center(child: CircularProgressIndicator())
+                    else
+                      ElevatedButton(
+                        onPressed: _fazerLogin,
+                        child: const Text('ENTRAR'),
+                      ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _campoTexto({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-    bool obscure = false,
-    Widget? suffixIcon,
-    String? Function(String?)? validator,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 6,
-            offset: Offset(0, 3),
-          )
-        ],
-      ),
-      child: TextFormField(
-        controller: controller,
-        obscureText: obscure,
-        validator: validator,
-        decoration: InputDecoration(
-          labelText: label,
-          prefixIcon: Icon(icon),
-          suffixIcon: suffixIcon,
-          border: InputBorder.none,
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         ),
       ),
     );

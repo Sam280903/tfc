@@ -1,9 +1,11 @@
 // lib/app/rotas.dart
 
 class Rotas {
-  static const verificador = '/'; // Rota inicial
+  static const boasVindas = '/';
+  static const verificador = '/verificador'; // Rota inicial
   static const login = '/login';
   static const cadastroGestor = '/cadastro-gestor';
+  static const redefinirSenha = '/redefinir-senha';
   static const home = '/home';
   static const ordensServico = '/ordens-servico';
   static const tecnicos = '/tecnicos';

@@ -11,7 +11,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  http: ^1.2.1 # ou a versão mais recente
+  shared_preferences: ^2.2.3 # ou a versão mais recente
   cupertino_icons: ^1.0.8
   cloud_firestore: ^6.0.0
   sqflite: ^2.4.1
@@ -20,12 +21,13 @@ dependencies:
   firebase_core: ^4.0.0
   firebase_auth: ^6.0.1
   firebase_messaging: ^16.0.0
+  uuid: ^4.5.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^4.0.0
+  flutter_lints: ^6.0.0
 
 
 flutter:

@@ -81,7 +81,7 @@ class OrdemServicoFirebase {
     final snapshot = await _colecao.where('ativo', isEqualTo: true).get();
     return snapshot.docs.map((doc) {
       return OrdemServicoModel.fromMap(
-        doc.data() as Map<String, dynamic>,
+        doc.data(),
         doc.id,
       );
     }).toList();

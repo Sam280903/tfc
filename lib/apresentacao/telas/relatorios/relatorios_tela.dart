@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class RelatoriosTela extends StatelessWidget {
-  const RelatoriosTela({Key? key}) : super(key: key);
+  const RelatoriosTela({super.key});
 
   @override
   Widget build(BuildContext context) {

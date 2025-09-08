@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class OrdensServicoTela extends StatelessWidget {
-  const OrdensServicoTela({Key? key}) : super(key: key);
+  const OrdensServicoTela({super.key});
 
   @override
   Widget build(BuildContext context) {

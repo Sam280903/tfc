@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AgendamentosTela extends StatelessWidget {
-  const AgendamentosTela({Key? key}) : super(key: key);
+  const AgendamentosTela({super.key});
 
   @override
   Widget build(BuildContext context) {

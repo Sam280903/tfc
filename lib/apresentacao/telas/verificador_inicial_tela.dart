@@ -6,7 +6,7 @@ import 'package:gerenciar/apresentacao/telas/login/login_tela.dart';
 import 'package:gerenciar/servicos/autenticacao_servico.dart';
 
 class VerificadorInicialTela extends StatefulWidget {
-  const VerificadorInicialTela({Key? key}) : super(key: key);
+  const VerificadorInicialTela({super.key});
 
   @override
   State<VerificadorInicialTela> createState() => _VerificadorInicialTelaState();

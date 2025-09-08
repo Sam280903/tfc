@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class FormasPagamentoTela extends StatelessWidget {
-  const FormasPagamentoTela({Key? key}) : super(key: key);
+  const FormasPagamentoTela({super.key});
 
   @override
   Widget build(BuildContext context) {

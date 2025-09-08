@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ComuntemTela extends StatelessWidget {
-  const ComuntemTela({Key? key}) : super(key: key);
+  const ComuntemTela({super.key});
 
   @override
   Widget build(BuildContext context) {
