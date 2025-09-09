@@ -1,4 +1,4 @@
-// lib/aplicativo.dart
+// lib/
 
 // CORREÇÃO: Corrigido o erro de digitação no import.
 import 'package:flutter/material.dart';
